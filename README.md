@@ -7,7 +7,6 @@ Attention! I find that using the hyper parameters in the paper can not get good 
 ![](https://github.com/ljmiao/PENCIL/raw/master/hyper_parameters.jpg)
 
 # experiment result:
-
 ![](https://github.com/ljmiao/PENCIL/raw/master/symmetric_noise_result.jpg)
 
 ![](https://github.com/ljmiao/PENCIL/raw/master/Asymmetric_Noise_result.jpg)
