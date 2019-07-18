@@ -18,7 +18,6 @@ from torchvision import transforms, datasets, models
 import torch.nn.functional as F
 
 from resnet import resnet32
-from resnet2 import resnet34
 import cifar10 as dataset
 gpu_status = torch.cuda.is_available()
 
@@ -130,30 +129,20 @@ def main():
         for batch_idx, (inputs, labels, indexs, labels_update, gtrue_labels) in enumerate(trainloader):
             if gpu_status:
                 inputs, labels = inputs.cuda(), labels.cuda()
-                # indexs =  indexs.cuda()
-                # labels_update = labels_update.cuda()#中间产物，softmax后得到更新的标签分布
                 gtrue_labels=gtrue_labels.cuda()
-            # print('labels_update',type(labels_update),type(inputs),type(labels))
-            # labels_update.requires_grad_()
-
+           
             # compute output
             outputs = model(inputs)
             loss=criterion(outputs,labels)
             preds = torch.max(outputs.detach(), 1)[1]#不需要梯度，得到下标
             optimizer.zero_grad()
             loss.backward()
-            # print('labels_update.grad',labels_update.grad)
-            # labels_grad[indexs.cpu().detach().numpy().tolist()] = labels_update.grad.cpu().detach().numpy().tolist()##############??????????????????
-
+          
             optimizer.step()#更新参数
             running_loss += loss.item()*len(labels)#标量 用item()得到python数字
             running_corrects += torch.sum(preds == gtrue_labels.detach())
         scheduler.step()
         epoch_loss = running_loss / data_sizes
-        #更新标签
-        # true_labels,corr_labels=trainloader.dataset.label_update(args.lamda,labels_grad)
-        # print('corr_labels',corr_labels,'\n',np.argmax(corr_labels,axis=1),true_labels)
-        # corr_rate=sum(np.argmax(corr_labels,axis=1)==true_labels)/data_sizes
 
         if gpu_status:
             epoch_acc = running_corrects.cpu().numpy() / data_sizes
