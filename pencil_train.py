@@ -130,11 +130,6 @@ def main():
         labels_grad = np.zeros((data_sizes, 10), dtype=np.float32)
 
         for batch_idx, (inputs, labels, indexs,labels_update,gtrue_labels) in enumerate(trainloader):
-            # print('XXXX',labels_update,'\n',gtrue_labels)
-            # print('gtrue_labels and labels', torch.mean(torch.eq(labels, gtrue_labels).float()))
-            # print('labels_update and truelabel', torch.mean(torch.eq(torch.argmax(labels_update,dim=1) , gtrue_labels).float()))
-            # print('labels_update and labels###########\n',torch.argmax(labels_update,dim=1),'\n',labels)##7 7 5 7
-            # print('labels_update and labels###########', torch.mean(torch.eq(torch.argmax(labels_update,dim=1) , labels).float()))#########???为什么不相等
 
             if gpu_status:
                 inputs, labels = inputs.cuda(), labels.cuda()
@@ -161,8 +156,7 @@ def main():
         epoch_loss = running_loss / data_sizes
         #更新标签
         corr_rate=trainloader.dataset.label_update(args.lamda,labels_grad)
-        # print('corr_labels',corr_labels,'\n',np.argmax(corr_labels,axis=1),true_labels)
-        # corr_rate = sum(np.argmax(corr_labels, axis=1) == true_labels) / data_sizes
+       
 
         if gpu_status:
             epoch_acc = running_corrects.cpu().numpy() / data_sizes
@@ -238,26 +232,17 @@ def validate(model,valloader,criterion, epoch,data_sizes):
         return epoch_loss,epoch_acc
 
 def pencil_loss(outputs,labels_update,labels):
-    # sfm=nn.Softmax(1)
-    # pred=sfm(outputs)
-    # pred = pred.detach()#detach使得pred requires_grad=False,并且不影响outputs
-
-    pred = F.softmax(outputs, dim=1)####是否应该detach????????????/
-    yd = F.softmax(labels_update, dim=1)
-
-    # criterion = nn.CrossEntropyLoss()
-    # Lo=criterion(labels_update,labels)
+ 
+    pred = F.softmax(outputs, dim=1)
+    #yd = F.softmax(labels_update, dim=1)
 
     Lo = -torch.mean(F.log_softmax(labels_update, dim=1)[torch.arange(labels_update.shape[0]),labels])
 
-    # Le=criterion(outputs,pred)
     Le = -torch.mean(torch.sum(F.log_softmax(outputs, dim=1) * pred, dim=1))
 
-    # Lc=criterion(labels_update,pred)-criterion(outputs,pred)
 
-    Lc1 = -torch.mean(torch.sum(F.log_softmax(labels_update, dim=1) * pred, dim=1)) - Le##原本
-    Lc2= -torch.mean(torch.sum(F.log_softmax(outputs,dim=1)*yd,dim=1)) + torch.mean(torch.sum(F.log_softmax(labels_update,dim=1)*yd,dim=1))
-    Lc=(Lc1+Lc2)/2
+    Lc = -torch.mean(torch.sum(F.log_softmax(labels_update, dim=1) * pred, dim=1)) - Le
+    
     loss_total = Lc/class_num+args.alpha* Lo +args.beta* Le/class_num #0.1,0.01,0.1
     return loss_total
 
