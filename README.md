@@ -3,6 +3,9 @@ Third-party implement of paper ['Probabilistic End-to-end Noise Correction for L
 
 Attention! I find that using the hyper parameters in the paper can not get good result, so I try some other parameters and the result is not bad.
 
+# Requirements
+pytorch >= 1.0
+
 # hyper parameters
 ![](https://github.com/ljmiao/PENCIL/raw/master/hyper_parameters.jpg)
 
