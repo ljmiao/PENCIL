@@ -10,3 +10,9 @@ Attention! I find that using the hyper parameters in the paper can not get good 
 ![](https://github.com/ljmiao/PENCIL/raw/master/symmetric_noise_result.jpg)
 
 ![](https://github.com/ljmiao/PENCIL/raw/master/Asymmetric_Noise_result.jpg)
+
+# Run
+for example:
+1. python backbone_train.py --lr 0.03 
+2. python pencil_train.py --alpha 0.01 --beta 0.1 --lamda 500 --lr 0.03 --percent 0.3
+3. python fine_tune.py --lr 0.1 --percent 0.3
