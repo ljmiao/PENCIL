@@ -16,12 +16,11 @@ def get_cifar10(root, args, train=True,
     base_dataset = torchvision.datasets.CIFAR10(root, train=train, download=download)
     # print('base_dataset',dir(base_dataset))
 
-    train_idxs, val_idxs = train_val_split(base_dataset.targets,args.train_ratio)##注意，若为0.4版本，应为base_dataset.targets
+    train_idxs, val_idxs = train_val_split(base_dataset.targets,args.train_ratio)
 
     train_dataset = CIFAR10_train(root, train_idxs, args, train=train, transform=transform_train)
     if args.asym:
         train_dataset.asymmetric_noise()
-        # print('origin labels_update',np.argmax(train_dataset.labels_update[0:128],axis=1))# 7 7 3 7
 
     else:
         train_dataset.symmetric_noise()
